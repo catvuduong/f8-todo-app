@@ -1,25 +1,88 @@
+import { useEffect, useRef, useState } from 'react';
 import { useStore, actions } from '../store';
 
-function TodoForm() {
+function TodoForm({ edit, setEdit }) {
     const [state, dispatch] = useStore();
-    const { todos, todoInput } = state;
+    // const [edit, setEdit] = useState(edit);
+    let { todoInput, todoInputEdit } = state;
+    // let [edit] = useState(edit)
+    const inputRef = useRef(null);
 
-    const handleAdd = () => {
-        dispatch(actions.addTodo(todoInput))
+    // const initFetch = useCallback(() => {
+    //     dispatch(actions.setToDoInputEdit(edit.work))
+    // }, [dispatch]);
+
+    // useEffect(() => {
+    //     initFetch();
+    // }, [initFetch]);
+    console.log(edit);
+
+    const handleEdit = (edit, dispatch) => {
+        if (edit) {
+            dispatch(actions.setToDoInputEdit(edit.work))
+        };
+    }
+
+    useEffect(() => {
+        // console.log(edit);
+        handleEdit(edit, dispatch);
+    }, [edit])
+
+    useEffect(() => {
+        inputRef.current.focus();
+    })
+
+    const handleAdd = e => {
+        e.preventDefault();
+        dispatch(actions.addTodo({
+            id: Math.floor(Math.random() * 1000),
+            work: todoInput
+        }))
+    }
+
+    const handleUpdate = e => {
+        e.preventDefault();
+        dispatch(actions.updateTodo({
+            id: edit.id,
+            work: todoInputEdit
+        }))
+        setEdit({ id: null, work: '' });
     }
 
     return (
         <form className='todo-form'>
-            <input
-                className='todo-input'
-                value={todoInput}
-                placeholder="Enter todo..."
-                onChange={e => {
-                    dispatch(actions.setToDoInput(e.target.value));
-                }}
-            />
-            <button className='todo-button' onClick={handleAdd}>Add todo</button>
-            <ul>{todos.map((item, index) => <li key={index}>{item}</li>)}</ul>
+            {edit ?
+                (<>
+                    <input
+                        className='todo-input edit'
+                        placeholder='Update your item'
+                        value={todoInputEdit}
+                        name='text'
+                        ref={inputRef}
+                        onChange={e => {
+                            dispatch(actions.setToDoInputEdit(e.target.value));
+                        }}
+                    />
+                    <button
+                        onClick={handleUpdate}
+                        className='todo-button edit'>
+                        Update
+                    </button>
+                </>) :
+                (<>
+                    <input
+                        className='todo-input'
+                        placeholder="Enter todo..."
+                        value={todoInput}
+                        name='text'
+                        ref={inputRef}
+                        onChange={e => {
+                            dispatch(actions.setToDoInput(e.target.value));
+                        }}
+                    />
+                    <button className='todo-button' onClick={handleAdd}>Add todo</button>
+                </>)
+            }
         </form>
     )
 }
