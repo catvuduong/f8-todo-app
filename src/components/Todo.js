@@ -13,13 +13,7 @@ function Todo() {
     }
 
     const handleComplete = id => {
-        todos.map(item => {
-            if (item.id === id) {
-                item.isComplete = !item.isComplete;
-            }
-            return item;
-        })
-        dispatch(actions.completeTodo(todos));
+        dispatch(actions.completeTodo(id))
     }
 
     if (edit.id) {

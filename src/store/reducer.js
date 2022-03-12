@@ -26,7 +26,18 @@ function reducer(state, action) {
         }
 
         case COMPLETE_TODO: {
-            return { ...state, todos: [...action.payload] }
+            let newTodos = [];
+            for (var i = 0; i < state.todos.length; i++) {
+                let newTodo = { ...state.todos[i] };
+                if (newTodo.id === action.payload) {
+                    newTodo.isComplete = !newTodo.isComplete;
+                }
+                newTodos = [...newTodos, newTodo];
+            }
+            return {
+                ...state,
+                todos: [...newTodos]
+            }
         }
 
         case EDIT_TODO: {
@@ -44,8 +55,8 @@ function reducer(state, action) {
         }
 
         case UPDATE_TODO: {
-            if (!action.payload.work || /^\s*$/.test(action.payload.work)) { return { ...state } }
-            const newTodos = [...state.todos]
+            if (!action.payload.work || /^\s*$/.test(action.payload.work)) { return { ...state } };
+            const newTodos = [...state.todos];
             const index = newTodos.findIndex(item => item.id === action.payload.id);
             if (index !== -1) {
                 newTodos[index] = { ...action.payload };
@@ -55,7 +66,7 @@ function reducer(state, action) {
         }
 
         case REMOVE_TODO: {
-            const newTodos = [...state.todos]
+            const newTodos = [...state.todos];
             const index = newTodos.findIndex(item => item.id === action.payload.id);
             if (index !== 1) newTodos.splice(index, 1);
             return { ...state, todos: [...newTodos] }
